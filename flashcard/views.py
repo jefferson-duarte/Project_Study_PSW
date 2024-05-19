@@ -65,3 +65,17 @@ def novo_flashcard(request):
         )
 
         return redirect(reverse('flashcard:novo_flashcard'))
+
+
+def deletar_flashcard(request, id):
+
+    flashcard = Flashcard.objects.get(id=id)
+    name_flashcard = flashcard
+    flashcard.delete()
+    messages.add_message(
+        request,
+        constants.SUCCESS,
+        f'Flashcard "{name_flashcard}" deletado com sucesso!'
+    )
+
+    return redirect(reverse('flashcard:novo_flashcard'))
