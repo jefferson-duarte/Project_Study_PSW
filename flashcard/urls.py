@@ -14,4 +14,9 @@ urlpatterns = [
         views.deletar_flashcard,
         name='deletar_flashcard'
     ),
+    path(
+        'iniciar_desafio/',
+        views.iniciar_desafio,
+        name='iniciar_desafio'
+    )
 ]
