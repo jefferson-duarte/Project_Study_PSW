@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import Categoria, Flashcard, Desafio, FlashcardDesafio
@@ -103,12 +104,18 @@ def iniciar_desafio(request):
         )
 
     elif request.method == 'POST':
-        titulo = request.POST.get('titulo')
+        titulo = request.POST.get('titulo').strip()
         categorias = request.POST.getlist('categoria')
         dificuldade = request.POST.get('dificuldade')
         qtd_perguntas = request.POST.get('qtd_perguntas')
 
-        # if 0 > int(qtd_perguntas) == '':
+        if titulo == '':
+            messages.add_message(
+                request,
+                constants.ERROR,
+                'Favor, adicionar um título.'
+            )
+            return redirect(reverse('flashcard:iniciar_desafio'))
 
         try:
             flashcards = Flashcard.objects.filter(
@@ -161,4 +168,75 @@ def iniciar_desafio(request):
 
         desafio.save()
 
-        return HttpResponse('Teste')
+        url = reverse('flashcard:listar_desafios')
+
+        return redirect(url)
+
+
+def listar_desafios(request):
+    if request.method == 'GET':
+        desafios = Desafio.objects.filter(
+            user=request.user
+        )
+        context = {
+            'desafios': desafios,
+        }
+
+        return render(request, 'listar_desafio.html', context)
+
+
+def desafio(request, id):
+    desafio = Desafio.objects.get(id=id)
+
+    if not desafio.user == request.user:
+        raise Http404()
+
+    if request.method == 'GET':
+        acertos = desafio.flashcards.filter(
+            respondido=True
+        ).filter(
+            acertou=True
+        ).count()
+
+        erros = desafio.flashcards.filter(
+            respondido=True
+        ).filter(
+            acertou=False
+        ).count()
+
+        faltantes = desafio.flashcards.filter(
+            respondido=False
+        ).count()
+
+        context = {
+            'desafio': desafio,
+            'acertos': acertos,
+            'erros': erros,
+            'faltantes': faltantes,
+        }
+
+    return render(request, 'desafio.html', context)
+
+
+def responder_flashcard(request, id):
+    flashcard_desafio = FlashcardDesafio.objects.get(id=id)
+    acertou = request.GET.get('acertou')
+    desafio_id = request.GET.get('desafio_id')
+
+    if not flashcard_desafio.flashcard.user == request.user:
+        messages.add_message(
+            request,
+            constants.ERROR,
+            'Erro ao buscar flash card.'
+        )
+
+        return redirect(reverse('flashcard:desafio'))
+
+    flashcard_desafio.respondido = True
+
+    flashcard_desafio.acertou = True if acertou == '1' else False
+    flashcard_desafio.save()
+
+    url = reverse('flashcard:desafio', args=[desafio_id])
+
+    return redirect(url)

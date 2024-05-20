@@ -18,5 +18,20 @@ urlpatterns = [
         'iniciar_desafio/',
         views.iniciar_desafio,
         name='iniciar_desafio'
-    )
+    ),
+    path(
+        'listar_desafios/',
+        views.listar_desafios,
+        name='listar_desafios'
+    ),
+    path(
+        'desafio/<int:id>/',
+        views.desafio,
+        name='desafio'
+    ),
+    path(
+        'responder_flashcard/<int:id>/',
+        views.responder_flashcard,
+        name='responder_flashcard'
+    ),
 ]
