@@ -34,4 +34,9 @@ urlpatterns = [
         views.responder_flashcard,
         name='responder_flashcard'
     ),
+    path(
+        'relatorio/<int:id>/',
+        views.relatorio,
+        name='relatorio'
+    )
 ]

@@ -240,3 +240,34 @@ def responder_flashcard(request, id):
     url = reverse('flashcard:desafio', args=[desafio_id])
 
     return redirect(url)
+
+
+def relatorio(request, id):
+    desafio = Desafio.objects.get(id=id)
+    acertou = desafio.flashcards.filter(acertou=True).count()
+    errou = desafio.flashcards.filter(acertou=False).count()
+
+    desafio_acertos_erros = [acertou, errou]
+
+    categorias = desafio.categoria.all()
+
+    nome_categoria = [i.nome for i in categorias]
+
+    categorias_acertos_erros = []
+    for categoria in categorias:
+        categorias_acertos_erros.append(
+            desafio.flashcards.filter(
+                flashcard__categoria=categoria
+            ).filter(
+                acertou=True
+            ).count()
+        )
+
+    context = {
+        'desafio': desafio,
+        'desafio_acertos_erros': desafio_acertos_erros,
+        'nome_categoria': nome_categoria,
+        'categorias_acertos_erros': categorias_acertos_erros,
+    }
+
+    return render(request, 'relatorio.html', context)
