@@ -7,7 +7,6 @@
     <link href="{% static 'flashcard/css/novo_flashcard.css' %}" rel="stylesheet">
     <link href="{% static 'flashcard/css/iniciar_desafio.css' %}" rel="stylesheet">
     <link href="{% static 'flashcard/css/desafio.css' %}" rel="stylesheet">
-    <link href="{% static 'apostilas/css/adicionar_apostilas.css' %}" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
 {% endblock 'cabecalho' %}
@@ -56,7 +55,7 @@
                         
                             <tr class="linha">
                                 <td>{{ apostila.titulo }}</td>
-                                <td><a href="" style="color: black; text-decoration: none;" class="btn-cadastro">Abrir</a></td>
+                                <td><a href="{% url "apostilas:apostila" apostila.id %}" style="color: black; text-decoration: none;" class="btn-cadastro">Abrir</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>
